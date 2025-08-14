@@ -1,0 +1,38 @@
+name: Deploy Bullionaire Web to Namecheap
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Deploy to Namecheap via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.NC_FTP_HOST }}
+          username: ${{ secrets.NC_FTP_USER }}
+          password: ${{ secrets.NC_FTP_PASS }}
+          local-dir: ./build
+          server-dir: /public_html/
+          # If your build folder is different (e.g., .next), change local-dir accordingly
+
+      - name: Success Message
+        run: echo "Bullionaire web app deployed to Namecheap hosting."
